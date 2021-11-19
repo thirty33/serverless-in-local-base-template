@@ -27,7 +27,9 @@ creado dentro de IAM Identity and Access Management (IAM).
 
 7) entrar en ./lambdas/common/Dynamo.js y setear los valores de accessKeyId y secretAccessKey
 
-8) correr comando: sls offline start para correr las labdas y la db de Dynamo en local
+8) correr comando: sls dynamodb install
 
-9) probar los servivios en postman.
+9) correr comando: sls offline start para correr las labdas y la db de Dynamo en local
+
+10) probar los servivios en postman.
 
