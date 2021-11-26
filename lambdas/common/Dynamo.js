@@ -3,8 +3,8 @@ const AWS = require('aws-sdk');
 AWS.config.update({
     region: 'us-east-1',
     endpoint: 'http://localhost:8089',
-    accessKeyId: 'AKIAX26D3DWXNZKD4WPW',
-    secretAccessKey: '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'
+    accessKeyId: '-',
+    secretAccessKey: '-'
 });
 
 let options = {
