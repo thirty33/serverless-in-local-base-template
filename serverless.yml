@@ -36,6 +36,12 @@ provider:
           - dynamodb:*
       Resource: '*'
 
+package:
+  patterns:
+    - '!.dynamodb/**'
+    - '!.git/**'
+    - '!node_modules/**'
+
 functions:
   getUser:
     handler: lambdas/endpoints/getUser.handler
@@ -58,6 +64,20 @@ functions:
             path: create-player-score/{ID}
             method: POST
             cors: true
+  updatePlayerScore:
+    handler: lambdas/endpoints/updatePlayerScore.handler
+    events:
+      - http:
+            path: update-player-score/{ID}
+            method: POST
+            cors: true
+  getGameScores:
+    handler: lambdas/endpoints/getGameScores.handler
+    events:
+      - http:
+            path: get-game-scores/{game}
+            method: GET
+            cors: true
 
 resources:
   Resources:
@@ -68,10 +88,17 @@ resources:
         AttributeDefinitions:
           - AttributeName: ID
             AttributeType: S
+          - AttributeName: game
+            AttributeType: S
         KeySchema:
           - AttributeName: ID
             KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
         BillingMode: PAY_PER_REQUEST
+
+        GlobalSecondaryIndexes:
+            - IndexName: game-index
+              KeySchema:
+                  - AttributeName: game
+                    KeyType: HASH
+              Projection:
+                    ProjectionType: ALL

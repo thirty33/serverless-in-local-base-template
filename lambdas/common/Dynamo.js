@@ -3,8 +3,8 @@ const AWS = require('aws-sdk');
 AWS.config.update({
     region: 'us-east-1',
     endpoint: 'http://localhost:8089',
-    accessKeyId: '-',
-    secretAccessKey: '-'
+    accessKeyId: 'AKIAX26D3DWXNZKD4WPW',
+    secretAccessKey: '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'
 });
 
 let options = {
@@ -13,9 +13,12 @@ let options = {
 };
 
 const documentClient = new AWS.DynamoDB.DocumentClient(options);
+// const documentClient = new AWS.DynamoDB.DocumentClient();
+
 
 const Dynamo = {
-    async get(ID, TableName) {
+    
+    get: async (ID, TableName) => {
 
         console.log('credential', AWS.config.credentials);
         
@@ -39,7 +42,7 @@ const Dynamo = {
         return data.Item;
     },
 
-    async write(data, TableName) {
+    write: async (data, TableName) => {
 
         if (!data.ID) {
             throw Error('no ID on the data')
@@ -59,6 +62,45 @@ const Dynamo = {
         }
 
         return data;
+    },
+
+    update: async ({tableName, primaryKey, primaryKeyValue, updateKey, updateValue}) => {
+
+        const params = {
+            TableName: tableName,
+            Key: { 
+                [primaryKey]: primaryKeyValue 
+            },
+            UpdateExpression: `set #${updateKey} = :updateValue`,
+            ExpressionAttributeNames: {
+                [`#${updateKey}`] : `${updateKey}`,
+            },
+            ExpressionAttributeValues: {
+                ':updateValue': updateValue
+            },
+            ReturnValues: 'UPDATED_NEW'
+        }
+        return documentClient.update(params).promise()
+
+    },
+
+    query: async({tableName, index, queryKey, queryValue}) => {
+
+        const params = {
+            TableName: tableName,
+            IndexName: index,
+            KeyConditionExpression: `#${queryKey} = :hkey`,
+            ExpressionAttributeNames: {
+                [`#${queryKey}`] : `${queryKey}`,
+            },
+            ExpressionAttributeValues: {
+                ':hkey': queryValue
+            },
+        }
+        
+        const res = await documentClient.query(params).promise();
+        
+        return res.Items || [];
     }
 }
 
